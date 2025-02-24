@@ -13,7 +13,6 @@ const HotelSchema = new mongoose.Schema({
     },
     phoneNumbers: {
         type: [String],
-        required: true,
         validate: {
             validator: function (arr) {
                 return arr.length > 0; // Ensures at least one phone number is provided
@@ -21,6 +20,17 @@ const HotelSchema = new mongoose.Schema({
             message: 'At least one phone number is required.'
         }
     }
-})
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+
+// Reverse populate with virtuals
+HotelSchema.virtual('rooms', {
+    ref: 'Room',
+    localField: '_id',
+    foreignField: 'hotel_id',
+    justOne: false
+});
 
 module.exports = mongoose.model('Hotel', HotelSchema);

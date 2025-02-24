@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 
 const RoomSchema = new mongoose.Schema({
     hotel_id : {
-        type: mongoose.Schema.Types.ObjectId,
-        ref : Hotels,
-        required: [true]
+        type: mongoose.Schema.ObjectId,
+        ref : 'Hotel',
+        required: true
     },
     room_number : {
         type: String,
@@ -23,6 +23,8 @@ const RoomSchema = new mongoose.Schema({
     },
     features: [{
         type: mongoose.Schema.ObjectId,
-        ref: Features
+        ref: 'Feature'
     }]
 });
+
+module.exports = mongoose.model('Room', RoomSchema);

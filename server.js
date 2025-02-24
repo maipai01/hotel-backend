@@ -14,6 +14,7 @@ connectDB();
 //Route files
 const hotels = require('./routes/hotels');
 const auth = require('./routes/auth');
+const rooms = require('./routes/rooms');
 
 //Body parser
 app.use(express.json());
@@ -24,6 +25,7 @@ app.use(cookieParser());
 //Mount routers
 app.use('/api/v1/hotels', hotels);
 app.use('/api/v1/auth', auth);
+app.use('/api/v1/rooms', rooms);
 
 const PORT = process.env.PORT || 5001;
 

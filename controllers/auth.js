@@ -5,11 +5,11 @@ const hrs_to_ms_multiplier = 24*60*60*1000;
 //@access   Public
 exports.register = async (req,res,next) => {
     try {
-        const {name, email, password, role} = req.body;
+        const {name, tel, email, password, role} = req.body;
 
         //Create User
         const user = await User.create({
-            name, email, password, role
+            name, tel, email, password, role
         });
 
         //Create token
