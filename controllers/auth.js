@@ -1,4 +1,4 @@
-const User = require('../models/Users');
+const User = require('../models/User');
 const hrs_to_ms_multiplier = 24*60*60*1000;
 //@desc     Register User
 //@route    POST /api/v1/auth/register

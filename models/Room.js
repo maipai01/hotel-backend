@@ -22,7 +22,7 @@ const RoomSchema = new mongoose.Schema({
         required: [true, 'Please add the price per night']
     },
     features: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.ObjectId,
         ref: Features
     }]
 });

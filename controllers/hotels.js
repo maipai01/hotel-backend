@@ -1,4 +1,4 @@
-const Hotel = require('../models/Hotels');
+const Hotel = require('../models/Hotel');
 // @desc    Get all hotels
 // @route   GET /api/v1/hotels
 // @access  Public
