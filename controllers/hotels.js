@@ -3,7 +3,7 @@ const Room = require('../models/Room');
 // @desc    Get all hotels
 // @route   GET /api/v1/hotels
 // @access  Public
-exports.getAllHotel = async (req, res, next) => {
+exports.getAllHotels = async (req, res, next) => {
     let query ;
 
     // Copy req.query
@@ -151,7 +151,7 @@ exports.deleteHotel = async (req, res, next) => {
 
         await Room.deleteMany({ hotel: req.params.id });
 
-        await hotel.deleteOne({ _id: req.params.id });
+        await Hotel.deleteOne({ _id: req.params.id });
 
         res.status(200).json({ success: true, data: {}});
     }

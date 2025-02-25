@@ -4,7 +4,7 @@ const router = express.Router();
 // Include other resource routers
 const roomRouter = require('./rooms');
 
-const {getAllHotel, getOneHotel, createHotel, updateHotel, deleteHotel} = require('../controllers/hotels');
+const {getAllHotels, getOneHotel, createHotel, updateHotel, deleteHotel} = require('../controllers/hotels');
 
 const {protect, authorize} = require('../middleware/auth');
 
@@ -12,7 +12,7 @@ const {protect, authorize} = require('../middleware/auth');
 router.use('/:hotelId/rooms', roomRouter);
 
 router.route('/')
-    .get(getAllHotel)
+    .get(getAllHotels)
     .post(protect, authorize('admin'), createHotel);
 router.route('/:id')
     .get(getOneHotel)

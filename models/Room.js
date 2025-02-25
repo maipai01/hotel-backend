@@ -1,30 +1,21 @@
 const mongoose = require('mongoose');
 
 const RoomSchema = new mongoose.Schema({
-    hotel_id : {
+    room_type_id: {
         type: mongoose.Schema.ObjectId,
-        ref : 'Hotel',
+        ref: 'RoomType',
         required: true
     },
-    room_number : {
+    room_number: {
         type: String,
-        required: [true, 'Please add a room number']
+        required: true,
+        unique: true // Ensures no duplicate room numbers
     },
-    room_type : {
-        type: String
-    },
-    room_size : {
-        type: Number,
-        required: [true, 'Please add a room size']
-    },
-    price_per_night: {
-        type: Number,
-        required: [true, 'Please add the price per night']
-    },
-    features: [{
-        type: mongoose.Schema.ObjectId,
-        ref: 'Feature'
-    }]
+    status: {
+        type: String,
+        enum: ['available', 'booked', 'under maintenance'],
+        default: 'available'
+    }
 });
 
 module.exports = mongoose.model('Room', RoomSchema);
