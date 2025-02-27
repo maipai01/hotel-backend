@@ -21,9 +21,15 @@ exports.getBookings = async (req, res, next) => {
                 select: 'name address telephoneNumber'
             });
         }
+        else {
+            query = Booking.find().populate({
+                path: 'hotel',
+                select: 'name address telephoneNumber'
+            });
+        }
     }
     try {
-        const bookings = await Booking.find();
+        const bookings = await query;
         return res.status(200).json({
             success: true,
             count: bookings.length,
@@ -69,15 +75,15 @@ exports.getBooking = async (req, res, next) => {
     }
 };
 
-//@desc    Add booking
-//@route   POST /api/v1/hotels/:hotelId/bookings
-//@access  Private
+// @desc    Add booking
+// @route   POST /api/v1/hotels/:hotelId/bookings
+// @access  Private
 exports.addBooking = async (req, res, next) => {
     try {
         req.body.hotel = req.params.hotelId;
 
         const hotel = await Hotel.findById(req.params.hotelId);
-        if(!hotel) {
+        if (!hotel) {
             return res.status(404).json({
                 success: false,
                 error: `No hotel with id : ${req.params.hotelId}`
@@ -87,9 +93,9 @@ exports.addBooking = async (req, res, next) => {
         // add userId to req.body
         req.body.user = req.user.id;
 
-        // check for exist booking
+        // check for existing booking
         const existedBooking = await Booking.findOne({ hotel: req.params.hotelId, user: req.user.id });
-        if(existedBooking) {
+        if (existedBooking) {
             return res.status(400).json({
                 success: false,
                 error: 'You have already booked this hotel'
@@ -97,20 +103,25 @@ exports.addBooking = async (req, res, next) => {
         }
 
         const booking = await Booking.create(req.body);
-        
+
         res.status(201).json({
             success: true,
             data: booking
         });
 
-    } catch(err) {
+    } catch (err) {
         console.log(err);
+
+        let errorMessage = 'Cannot add booking';
+        if (err.message.includes('Booking cannot be made for more than 3 nights')) {
+            errorMessage = err.message;
+        }
 
         return res.status(500).json({
             success: false,
-            error: 'Cannot add booking'
+            error: errorMessage
         });
-    }   
+    }
 };
 
 //@desc    Update booking
@@ -131,7 +142,7 @@ exports.updateBooking = async (req, res, next) => {
         if(booking.user.toString() !== req.user.id && req.user.role !== 'admin') {
             return res.status(401).json({
                 success: false,
-                error: `User ${req.user.id} is not authorized to update this booking`
+                error: `User role ${req.user.role} is not authorized to update this booking`
             });
         }
 
@@ -173,7 +184,7 @@ exports.deleteBooking = async (req, res, next) => {
         if(booking.user.toString() !== req.user.id && req.user.role !== 'admin') {
             return res.status(401).json({
                 success: false,
-                error: `User ${req.user.id} is not authorized to delete this booking`
+                error: `User role ${req.user.role} is not authorized to delete this booking`
             });
         }
 

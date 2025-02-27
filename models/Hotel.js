@@ -28,7 +28,7 @@ const HotelSchema = new mongoose.Schema({
 HotelSchema.virtual('bookings', {
     ref: 'Booking',
     localField: '_id',
-    foreignField: 'hotel_id',
+    foreignField: 'hotel',
     justOne: false
 });
 

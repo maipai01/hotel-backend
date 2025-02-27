@@ -25,38 +25,43 @@ exports.register = async (req,res,next) => {
 //@route    POST /api/v1/auth/login
 //@access   Public
 exports.login = async (req,res,next) => {
-    const {email, password} = req.body;
+    try {
+        const {email, password} = req.body;
 
-    //Validate email & Password
-    if(!email || !password) {
-        return res.status(400).json({
-            success : false,
-            message : 'Please provide an email and password'
-        });
+        //Validate email & Password
+        if(!email || !password) {
+            return res.status(400).json({
+                success : false,
+                message : 'Please provide an email and password'
+            });
+        }
+
+        //Check for user
+        const user = await User.findOne({email}).select('+password');
+
+        if(!user) {
+            return res.status(400).json({
+                success : false,
+                message : 'Invalid Credentials'
+            });
+        }
+
+        //Check if password matches
+        const isMatch = await user.matchPassword(password);
+
+        if(!isMatch) {
+            return res.status(400).json({
+                success : false,
+                message : 'Invalid Credentials'
+            });
+        }
+
+        //Create token
+        sendTokenResponse(user, 200, res);
     }
-
-    //Check for user
-    const user = await User.findOne({email}).select('+password');
-
-    if(!user) {
-        return res.status(400).json({
-            success : false,
-            message : 'Invalid Credentials'
-        });
+    catch (err) {
+        return res.status(401).json({message: 'Cannot convert email or password to string'})
     }
-
-    //Check if password matches
-    const isMatch = await user.matchPassword(password);
-
-    if(!isMatch) {
-        return res.status(400).json({
-            success : false,
-            message : 'Invalid Credentials'
-        });
-    }
-
-    //Create token
-    sendTokenResponse(user, 200, res);
 }
 
 const sendTokenResponse = (user, statusCode, res) => {
@@ -87,3 +92,18 @@ exports.getMe = async (req,res,next) => {
         data: user
     });
 };
+
+//@desc     Logout User / Clear Cookie
+//@route    GET /api/v1/auth/logout
+//@access   Public
+exports.logout = async(req,res,next) => {
+    res.cookie('token','none',{
+        expires: new Date(Date.now() + 10*1000),
+        httpOnly: true
+    });
+
+    res.status(200).json({
+        success: true,
+        data: {}
+    });
+}
