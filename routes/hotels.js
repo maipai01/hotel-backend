@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 
 // Include other resource routers
-const roomRouter = require('./rooms');
+const bookingRouter = require('./Booking');
 
 const {getAllHotels, getOneHotel, createHotel, updateHotel, deleteHotel} = require('../controllers/hotels');
 
 const {protect, authorize} = require('../middleware/auth');
 
 // Re-route into other resource routers
-router.use('/:hotelId/rooms', roomRouter);
+router.use('/:hotelId/bookings', roomRouter);
 
 router.route('/')
     .get(getAllHotels)

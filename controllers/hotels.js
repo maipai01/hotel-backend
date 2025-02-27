@@ -1,5 +1,5 @@
 const Hotel = require('../models/Hotel');
-const Room = require('../models/Room');
+const Booking = require('../models/Booking');
 // @desc    Get all hotels
 // @route   GET /api/v1/hotels
 // @access  Public
@@ -22,7 +22,7 @@ exports.getAllHotels = async (req, res, next) => {
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
 
     // Finding resource
-    query = Hotel.find(JSON.parse(queryStr)).populate('rooms');
+    query = Hotel.find(JSON.parse(queryStr)).populate('bookings');
 
     // Select Fields
     if (req.query.select) {
@@ -84,7 +84,7 @@ exports.getAllHotels = async (req, res, next) => {
 // @access  Public
 exports.getOneHotel = async (req, res, next) => {
     try {
-        const hotel = await Hotel.findById(req.params.id).populate('rooms');
+        const hotel = await Hotel.findById(req.params.id).populate('bookings');
         if (!hotel) {
             return res.status(400).json({success: false});
         }
@@ -149,10 +149,8 @@ exports.deleteHotel = async (req, res, next) => {
             });
         }
 
-        await Room.deleteMany({ hotel: req.params.id });
-
+        await Booking.deleteMany({ hotel: req.params.id });
         await Hotel.deleteOne({ _id: req.params.id });
-
         res.status(200).json({ success: true, data: {}});
     }
     catch (err) {

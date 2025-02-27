@@ -7,13 +7,14 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: [true,'Please add a name']
     },
-    tel : {
+    telephoneNumber : {
         type : String,
         required : [true,'Please add a phone number'],
         unique : true,
         match : [
             /^(\+212|0)([ \-_/]*)(\d[ \-_/]*){9}$/,
-            'Please add a valid phone number']
+            'Please add a valid phone number'
+        ]
     },
     email: {
         type: String,

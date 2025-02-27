@@ -6,16 +6,13 @@ const hrs_to_ms_multiplier = 24*60*60*1000;
 exports.register = async (req,res,next) => {
     try {
         const {name, tel, email, password, role} = req.body;
-
+        
         //Create User
         const user = await User.create({
             name, tel, email, password, role
         });
 
         //Create token
-        //const token = user.getSignedJwtToken();
-
-        //res.status(200).json({success: true, token});
         sendTokenResponse(user, 200, res);
     }
     catch (err) {
@@ -33,8 +30,8 @@ exports.login = async (req,res,next) => {
     //Validate email & Password
     if(!email || !password) {
         return res.status(400).json({
-            success: false,
-            msg: 'Please provide an email and password'
+            success : false,
+            message : 'Please provide an email and password'
         });
     }
 
@@ -43,8 +40,8 @@ exports.login = async (req,res,next) => {
 
     if(!user) {
         return res.status(400).json({
-            success: false,
-            msg: 'Invalid Credentials'
+            success : false,
+            message : 'Invalid Credentials'
         });
     }
 
@@ -53,15 +50,12 @@ exports.login = async (req,res,next) => {
 
     if(!isMatch) {
         return res.status(400).json({
-            success: false,
-            msg: 'Invalid Credentials'
+            success : false,
+            message : 'Invalid Credentials'
         });
     }
 
     //Create token
-    //const token = user.getSignedJwtToken();
-
-    //res.status(200).json({success: true, token});
     sendTokenResponse(user, 200, res);
 }
 

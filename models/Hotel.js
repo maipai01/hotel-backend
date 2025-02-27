@@ -11,14 +11,13 @@ const HotelSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add an address']
     },
-    phoneNumbers: {
-        type: [String],
-        validate: {
-            validator: function (arr) {
-                return arr.length > 0; // Ensures at least one phone number is provided
-            },
-            message: 'At least one phone number is required.'
-        }
+    telephoneNumber: {
+        type: String,
+        required: [true, 'Please add a telephone number'],
+        match : [
+            /^(\+212|0)([ \-_/]*)(\d[ \-_/]*){9}$/,
+            'Please add a valid phone number'
+        ]
     }
 }, {
     toJSON: { virtuals: true },
@@ -26,8 +25,8 @@ const HotelSchema = new mongoose.Schema({
 });
 
 // Reverse populate with virtuals
-HotelSchema.virtual('rooms', {
-    ref: 'Room',
+HotelSchema.virtual('bookings', {
+    ref: 'Booking',
     localField: '_id',
     foreignField: 'hotel_id',
     justOne: false
