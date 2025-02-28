@@ -5,15 +5,18 @@ const HotelSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add a name'],
         trim: true,
+        unique: true,
         maxlength: [50, 'Name cannot be more than 50 characters']
     },
     address: {
         type: String,
-        required: [true, 'Please add an address']
+        required: [true, 'Please add an address'],
+        unique: true
     },
     telephoneNumber: {
         type: String,
         required: [true, 'Please add a telephone number'],
+        unique: true,
         match : [
             /^(\+212|0)([ \-_/]*)(\d[ \-_/]*){9}$/,
             'Please add a valid phone number'

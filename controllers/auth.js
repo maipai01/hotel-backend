@@ -1,15 +1,15 @@
 const User = require('../models/User');
-const hrs_to_ms_multiplier = 24*60*60*1000;
+
 //@desc     Register User
 //@route    POST /api/v1/auth/register
 //@access   Public
 exports.register = async (req,res,next) => {
     try {
-        const {name, tel, email, password, role} = req.body;
+        const {name, telephoneNumber, email, password, role} = req.body;
         
         //Create User
         const user = await User.create({
-            name, tel, email, password, role
+            name, telephoneNumber, email, password, role
         });
 
         //Create token
@@ -69,7 +69,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     const token = user.getSignedJwtToken();
 
     const options = {
-        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * hrs_to_ms_multiplier),
+        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 *1000),
         httpOnly: true
     }
 
@@ -83,7 +83,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 }
 
 //@desc     Get current Logged in user
-//@route    POST /api/v1/auth/me
+//@route    GET /api/v1/auth/me
 //@access   Private
 exports.getMe = async (req,res,next) => {
     const user = await User.findById(req.user.id);

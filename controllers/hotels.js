@@ -75,7 +75,7 @@ exports.getAllHotels = async (req, res, next) => {
             data: hotels 
         });
     } catch (err) {
-        res.status(400).json({success: false});
+        res.status(400).json({success : false});
     }
 };
 
