@@ -5,11 +5,11 @@ const User = require('../models/User');
 //@access   Public
 exports.register = async (req,res,next) => {
     try {
-        const {name, telephoneNumber, email, password, role} = req.body;
+        const {name, telephoneNumber, email, password} = req.body;
         
         //Create User
         const user = await User.create({
-            name, telephoneNumber, email, password, role
+            name, telephoneNumber, email, password
         });
 
         //Create token
@@ -63,7 +63,26 @@ exports.login = async (req,res,next) => {
         return res.status(401).json({message: 'Cannot convert email or password to string'})
     }
 }
+//@desc     promote user to admin
+//@route    GET /api/v1/auth/promoteUser
+//@access   Public
+exports.promoteUser = async (req, res) => {
+    try {
+        
+        const user = await User.findByIdAndUpdate(req.params.UserId, {role:'admin'}, {
+                    new: true,
+                    runValidators: true
+        });
+        if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
+        
+        
+        res.status(200).json({ success: true, message: 'User promoted to Admin' });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
 const sendTokenResponse = (user, statusCode, res) => {
     //Create token
     const token = user.getSignedJwtToken();
