@@ -11,6 +11,8 @@ const cors = require('cors');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
 
+const User = require('./models/User');
+
 //Load env vars
 dotenv.config({path:'./config/config.env'});
 
@@ -80,6 +82,33 @@ const limiter = rateLimit({
     max: 100
 });
 app.use(limiter);
+
+//check if database contain User with admin role
+(async () => {
+    try {
+        // Check if admin exists
+        const adminExists = await User.findOne({telephoneNumber: '0123456789'});
+
+        // ถ้าไม่มี admin ในฐานข้อมูล
+        if (!adminExists) {
+            // สร้าง user ใหม่ที่มี role เป็น admin
+
+            const user = await User.create({
+                name: 'MyAdmin',
+                email: 'Admin@gmail.com',
+                telephoneNumber: '0123456789',
+                password: '12345678',
+                role: 'admin'
+            });
+            
+
+            // บันทึก admin ลงในฐานข้อมูล
+            console.log('First admin created successfully!');
+        } 
+    } catch (error) {
+        console.error('Error creating first admin:', error.message);
+    }
+})();
 
 //Prevent http param pollution
 app.use(hpp());
