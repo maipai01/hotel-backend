@@ -16,8 +16,15 @@ exports.register = async (req,res,next) => {
         sendTokenResponse(user, 200, res);
     }
     catch (err) {
-        res.status(400).json({success: false});
-        console.log(err.stack);
+        
+        console.log(err);
+        if (err.code === 11000) {
+            //tell User Why they cant register
+            const field = Object.keys(err.keyPattern)[0]; 
+            res.status(400).json({ error : `Sorry this ${field} is already in use` });
+        }else{
+            res.status(400).json({success: false});
+        }
     }
 }
 
