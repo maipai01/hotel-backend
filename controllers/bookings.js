@@ -188,7 +188,7 @@ exports.deleteBooking = async (req, res, next) => {
             });
         }
 
-        await booking.remove();
+        await booking.deleteOne();
 
         res.status(200).json({
             success: true,
