@@ -87,7 +87,7 @@ app.use(limiter);
 (async () => {
     try {
         // Check if admin exists
-        const adminExists = await User.findOne({telephoneNumber: '0123456789'});
+        const adminExists = await User.findOne({role: 'admin'});
 
         // ถ้าไม่มี admin ในฐานข้อมูล
         if (!adminExists) {
@@ -102,7 +102,6 @@ app.use(limiter);
             });
             
 
-            // บันทึก admin ลงในฐานข้อมูล
             console.log('First admin created successfully!');
         } 
     } catch (error) {

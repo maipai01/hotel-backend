@@ -89,7 +89,7 @@ exports.login = async (req,res,next) => {
 //@desc     promote user to admin
 //@route    GET /api/v1/auth/promoteUser
 //@access   Public
-exports.promoteUser = async (req, res) => {
+exports.promoteUser = async (req, res, next) => {
     try {
         
         const user = await User.findByIdAndUpdate(req.params.UserId, {role:'admin'}, {
