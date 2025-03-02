@@ -13,15 +13,15 @@ const UserSchema = new mongoose.Schema({
         required : [true,'Please add a phone number'],
         unique : true,
         match : [
-            /^(\+212|0)([ \-_/]*)(\d[ \-_/]*){9}$/,
+            /^(\+?[1-9][0-9]{1,4}[\s\-]?[0-9]{6,15}|0[0-9]{9,15})$/,
             'Please add a valid phone number'
         ]
     },
     email: {
-        type: String,
-        required: [true, 'Please add an email'],
-        unique: true,
-        match: [
+        type : String,
+        required : [true, 'Please add an email'],
+        unique : true,
+        match : [
             /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             'Please add a valid email'
         ]

@@ -6,6 +6,24 @@ const User = require('../models/User');
 exports.register = async (req,res,next) => {
     try {
         const {name, telephoneNumber, email, password} = req.body;
+
+        // Check If telephoneNumber exist
+        const existingPhone = await User.findOne({ telephoneNumber });
+        if (existingPhone) {
+            return res.status(400).json({
+                success: false,
+                error: 'Sorry this phone number is already in use'
+            });
+        }
+
+        // Check If email exist
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail) {
+            return res.status(400).json({
+                success: false,
+                error: 'Sorry this email is already in use'
+            });
+        }
         
         //Create User
         const user = await User.create({
@@ -16,15 +34,13 @@ exports.register = async (req,res,next) => {
         sendTokenResponse(user, 200, res);
     }
     catch (err) {
-        
         console.log(err);
-        if (err.code === 11000) {
-            //tell User Why they cant register
-            const field = Object.keys(err.keyPattern)[0]; 
-            res.status(400).json({ error : `Sorry this ${field} is already in use` });
-        }else{
-            res.status(400).json({success: false});
-        }
+
+        res.status(400).json({
+            success: false,
+            message : err.message || 'Something went wrong'
+        });
+        
     }
 }
 
@@ -82,8 +98,6 @@ exports.promoteUser = async (req, res) => {
         });
         if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
-        
-        
         res.status(200).json({ success: true, message: 'User promoted to Admin' });
     } catch (error) {
         console.log(error);
@@ -102,6 +116,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     if (process.env.NODE_ENV === 'production') {
         options.secure = true;
     }
+
     res.status(statusCode).cookie('token',token,options).json({
         success: true,
         token
