@@ -81,7 +81,7 @@ router.use('/:hotelId/bookings', bookingRouter);
  *               $ref: '#/components/schemas/Hotel'
  */
 router.route('/')
-    .get(getAllHotels)
+    .get(protect, getAllHotels)
     .post(protect, authorize('admin'), createHotel);
 
 /**
@@ -146,7 +146,7 @@ router.route('/')
  *         description: The hotel was deleted
  */
 router.route('/:id')
-    .get(getOneHotel)
+    .get(protect, getOneHotel)
     .put(protect, authorize('admin'), updateHotel)
     .delete(protect, authorize('admin'), deleteHotel);
 

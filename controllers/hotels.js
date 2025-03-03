@@ -1,10 +1,11 @@
 const Hotel = require('../models/Hotel');
 const Booking = require('../models/Booking');
+const User = require('../models/User');
 // @desc    Get all hotels
 // @route   GET /api/v1/hotels
 // @access  Public
 exports.getAllHotels = async (req, res, next) => {
-    let query ;
+    let query;
 
     // Copy req.query
     const reqQuery = { ...req.query };
@@ -22,7 +23,12 @@ exports.getAllHotels = async (req, res, next) => {
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
 
     // Finding resource
-    query = Hotel.find(JSON.parse(queryStr)).populate('bookings');
+    query = Hotel.find(JSON.parse(queryStr));
+
+    //Conditional Populating
+    if (req.user.role === 'admin') {
+        query = query.populate('bookings'); // Populate all bookings for admins
+    }
 
     // Select Fields
     if (req.query.select) {
@@ -68,14 +74,14 @@ exports.getAllHotels = async (req, res, next) => {
             };
         }
 
-        res.status(200).json({ 
-            success: true, 
-            count: hotels.length, 
-            pagination, 
-            data: hotels 
+        res.status(200).json({
+            success: true,
+            count: hotels.length,
+            pagination,
+            data: hotels
         });
     } catch (err) {
-        res.status(400).json({success : false});
+        res.status(400).json({ success: false });
     }
 };
 
@@ -84,14 +90,21 @@ exports.getAllHotels = async (req, res, next) => {
 // @access  Public
 exports.getOneHotel = async (req, res, next) => {
     try {
-        const hotel = await Hotel.findById(req.params.id).populate('bookings');
-        if (!hotel) {
-            return res.status(400).json({success: false});
+        let query = Hotel.findById(req.params.id);
+
+        //Conditional Populating
+        if (req.user.role === 'admin') {
+            query = query.populate('bookings'); // Populate all bookings for admins
         }
-        res.status(200).json({ success: true, data: hotel});
+
+        const hotel = await query;
+        if (!hotel) {
+            return res.status(400).json({ success: false });
+        }
+        res.status(200).json({ success: true, data: hotel });
     }
     catch (err) {
-        res.status(400).json({success: false});
+        res.status(400).json({ success: false });
     }
 };
 
@@ -109,7 +122,7 @@ exports.createHotel = async (req, res, next) => {
         if (err.name === "ValidationError") {
             errorMessage = Object.values(err.errors).map(val => val.message).join(", ");
         }
-        
+
         res.status(400).json({ success: false, error: errorMessage });
     }
 };
@@ -125,13 +138,13 @@ exports.updateHotel = async (req, res, next) => {
         });
 
         if (!hotel) {
-            return res.status(400).json({success: false});
+            return res.status(400).json({ success: false });
         }
 
         res.status(200).json({ success: true, data: hotel });
     }
     catch (err) {
-        res.status(400).json({success: false});
+        res.status(400).json({ success: false });
     }
 };
 
@@ -151,9 +164,9 @@ exports.deleteHotel = async (req, res, next) => {
 
         await Booking.deleteMany({ hotel: req.params.id });
         await Hotel.deleteOne({ _id: req.params.id });
-        res.status(200).json({ success: true, data: {}});
+        res.status(200).json({ success: true, data: {} });
     }
     catch (err) {
-        res.status(400).json({success: false});
+        res.status(400).json({ success: false });
     }
 };
