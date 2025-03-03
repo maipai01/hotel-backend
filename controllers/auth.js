@@ -93,15 +93,26 @@ exports.promoteUser = async (req, res, next) => {
     try {
         
         const user = await User.findByIdAndUpdate(req.params.UserId, {role:'admin'}, {
-                    new: true,
-                    runValidators: true
+            new: true,
+            runValidators: true
         });
-        if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found' 
+            });
+        }
 
-        res.status(200).json({ success: true, message: 'User promoted to Admin' });
+        res.status(200).json({ 
+            success: true, 
+            message: 'User promoted to Admin' 
+        });
     } catch (error) {
         console.log(error);
-        res.status(400).json({ success: false, message: error.message });
+        res.status(400).json({ 
+            success: false, 
+            message: error.message 
+        });
     }
 };
 const sendTokenResponse = (user, statusCode, res) => {
@@ -120,7 +131,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     res.status(statusCode).cookie('token',token,options).json({
         success: true,
         token
-    })
+    });
 }
 
 //@desc     Get current Logged in user

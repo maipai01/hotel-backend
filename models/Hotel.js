@@ -18,7 +18,7 @@ const HotelSchema = new mongoose.Schema({
         required: [true, 'Please add a telephone number'],
         unique: true,
         match : [
-            /^(\+212|0)([ \-_/]*)(\d[ \-_/]*){9}$/,
+            /^(\+?[1-9][0-9]{1,4}[\s\-]?[0-9]{6,15}|0[0-9]{9,15})$/,
             'Please add a valid phone number'
         ]
     }
