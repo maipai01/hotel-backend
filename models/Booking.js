@@ -23,7 +23,7 @@ const BookingSchema = new mongoose.Schema({
         validate: {
             validator: function (value) {
                 // Ensure checkOut is strictly after checkIn
-                return this.checkIn && value.getTime() > this.checkIn.getTime();
+                return this.checkOut && value.getTime() > this.checkIn.getTime();
             },
             message: 'Check-out date must be after check-in date'
         }
