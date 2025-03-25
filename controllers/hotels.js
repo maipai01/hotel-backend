@@ -1,48 +1,32 @@
 const Hotel = require('../models/Hotel');
 const Booking = require('../models/Booking');
-const User = require('../models/User');
+
 // @desc    Get all hotels
 // @route   GET /api/v1/hotels
 // @access  Public
 exports.getAllHotels = async (req, res, next) => {
-    let query;
+    let query
 
-    // Copy req.query
     const reqQuery = { ...req.query };
-
-    // Fields to exclude
     const removeFields = ['select', 'sort', 'page', 'limit'];
-
-    // Loop over removeFields and delete them from reqQuery
     removeFields.forEach(param => delete reqQuery[param]);
+    console.log("reqQuery :" , reqQuery)
 
-    console.log(reqQuery);
-
-    // Create operators ($gt, $gte, etc)
     let queryStr = JSON.stringify(reqQuery);
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
 
     // Finding resource
     query = Hotel.find(JSON.parse(queryStr));
 
-    //Conditional Populating
-    if (req.user.role === 'admin') {
-        query = query.populate('bookings'); // Populate all bookings for admins
-    }
-
     // Select Fields
     if (req.query.select) {
-        const fields = req.query.select.split(',').join(' ');
-        query = query.select(fields);
+        query = query.select(req.query.select.split(",").join(" "));
     }
 
     // Sort
-    if (req.query.sort) {
-        const sortBy = req.query.sort.split(',').join(' ');
-        query = query.sort(sortBy);
-    } else {
-        query = query.sort('-createdAt');
-    }
+    query = req.query.sort
+    ? query.sort(req.query.sort.split(",").join(" "))
+    : query.sort("-createdAt");
 
     // Pagination
     const page = parseInt(req.query.page, 10) || 1;
@@ -90,20 +74,17 @@ exports.getAllHotels = async (req, res, next) => {
 // @access  Public
 exports.getOneHotel = async (req, res, next) => {
     try {
-        let query = Hotel.findById(req.params.id);
 
-        //Conditional Populating
-        if (req.user.role === 'admin') {
-            query = query.populate('bookings'); // Populate all bookings for admins
-        }
+        let query = Hotel.findById(req.params.id);
 
         const hotel = await query;
         if (!hotel) {
-            return res.status(400).json({ success: false });
+            res.status(400).json({ success: false });
         }
         res.status(200).json({ success: true, data: hotel });
     }
     catch (err) {
+        console.error(err);
         res.status(400).json({ success: false });
     }
 };

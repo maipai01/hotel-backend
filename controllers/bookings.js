@@ -7,26 +7,23 @@ const Hotel = require('../models/Hotel');
 exports.getBookings = async (req, res, next) => {
     let query;
 
+    if (!req.user) {
+        return res.status(401).json({ success: false, error: 'Unauthorized, please log in.' });
+    }
+
     if(req.user.role !== 'admin') {
         query = Booking.find({ user: req.user.id }).populate({
             path : 'hotel',
             select: 'name address telephoneNumber'
         });
     } else {
-        if(req.params.hotelId) {
-            console.log(req.params.hotelId);
-
-            query = Booking.find({ hotel: req.params.hotelId }).populate({
-                path : 'hotel',
-                select: 'name address telephoneNumber'
-            });
-        }
-        else {
-            query = Booking.find().populate({
-                path: 'hotel',
-                select: 'name address telephoneNumber'
-            });
-        }
+        query = Booking.find().populate({
+            path: 'hotel',
+            select: 'name address telephoneNumber '
+        }).populate({
+            path: 'user',
+            select: 'name email'
+        });
     }
     try {
         const bookings = await query;
@@ -80,21 +77,39 @@ exports.getBooking = async (req, res, next) => {
 // @access  Private
 exports.addBooking = async (req, res, next) => {
     try {
-        req.body.hotel = req.params.hotelId;
+        const { hotel, checkIn, checkOut } = req.body
 
-        const hotel = await Hotel.findById(req.params.hotelId);
         if (!hotel) {
             return res.status(404).json({
                 success: false,
-                error: `No hotel with id : ${req.params.hotelId}`
+                error: 'Hotel ID is required'
+            });
+        }
+
+        const foundHotel = await Hotel.findById(hotel);
+        if (!foundHotel) {
+            return res.status(404).json({
+                success: false,
+                error: `No hotel found with id: ${hotel}`
             });
         }
 
         // add userId to req.body
         req.body.user = req.user.id;
 
+        const checkInDate = new Date(checkIn);
+        const checkOutDate = new Date(checkOut);
+        const duration = (checkOutDate - checkInDate) / (1000 * 3600 * 24);
+
+        if (duration > 3) {
+            return res.status(400).json({
+                success: false,
+                error: 'Booking cannot be made for more than 3 nights'
+            });
+        }
+
         // check for existing booking
-        const existedBooking = await Booking.findOne({ hotel: req.params.hotelId, user: req.user.id });
+        const existedBooking = await Booking.findOne({ hotel: req.body.hotel, user: req.user.id });
         if (existedBooking) {
             return res.status(400).json({
                 success: false,
@@ -144,6 +159,26 @@ exports.updateBooking = async (req, res, next) => {
                 success: false,
                 error: `User role ${req.user.role} is not authorized to update this booking`
             });
+        }
+
+        const { checkIn, checkOut } = req.body
+
+        if(checkIn && checkOut) {
+            if (checkIn > checkOut) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Check-in date cannot be after check-out date'
+                });
+            }
+
+            // Check if stay is greater than 3 days
+            const duration = (new Date(checkOut) - new Date(checkIn)) / (1000 * 3600 * 24); // Calculate duration in days
+            if (duration > 3) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'The stay cannot exceed 3 days'
+                });
+            }
         }
 
         booking = await Booking.findByIdAndUpdate(req.params.id, req.body, {

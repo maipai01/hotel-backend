@@ -21,6 +21,10 @@ const HotelSchema = new mongoose.Schema({
             /^(\+?[1-9][0-9]{1,4}[\s\-]?[0-9]{6,15}|0[0-9]{9,15})$/,
             'Please add a valid phone number'
         ]
+    },
+    image: {
+        type: String,
+        required: false
     }
 }, {
     toJSON: { virtuals: true },

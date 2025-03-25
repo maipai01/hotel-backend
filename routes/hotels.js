@@ -1,11 +1,7 @@
 const express = require('express');
 const router = express.Router();
-
-// Include other resource routers
 const bookingRouter = require('./bookings');
-
 const {getAllHotels, getOneHotel, createHotel, updateHotel, deleteHotel} = require('../controllers/hotels');
-
 const {protect, authorize} = require('../middleware/auth');
 
 // Re-route into other resource routers
@@ -34,11 +30,15 @@ router.use('/:hotelId/bookings', bookingRouter);
  *         telephoneNumber:
  *           type: string
  *           description: The telephone number of the hotel
+ *         image:
+ *           type: string
+ *           description: The image of the hotel (URL or path to the image)
  *       example:
  *         id: "60c72b2f9b1d8e001c8e4b8e"
  *         name: "Hotel California"
  *         address: "42 Sunset Boulevard, Los Angeles, CA"
  *         telephoneNumber: "+1234567890"
+ *         image: "https://example.com/path/to/image.jpg"
  */
 /**
 * @swagger
@@ -81,7 +81,7 @@ router.use('/:hotelId/bookings', bookingRouter);
  *               $ref: '#/components/schemas/Hotel'
  */
 router.route('/')
-    .get(protect, getAllHotels)
+    .get(getAllHotels)
     .post(protect, authorize('admin'), createHotel);
 
 /**
@@ -146,7 +146,7 @@ router.route('/')
  *         description: The hotel was deleted
  */
 router.route('/:id')
-    .get(protect, getOneHotel)
+    .get(getOneHotel)
     .put(protect, authorize('admin'), updateHotel)
     .delete(protect, authorize('admin'), deleteHotel);
 

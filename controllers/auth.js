@@ -5,29 +5,15 @@ const User = require('../models/User');
 //@access   Public
 exports.register = async (req,res,next) => {
     try {
+
         const {name, telephoneNumber, email, password} = req.body;
-
-        // Check If telephoneNumber exist
-        const existingPhone = await User.findOne({ telephoneNumber });
-        if (existingPhone) {
-            return res.status(400).json({
-                success: false,
-                error: 'Sorry this phone number is already in use'
-            });
-        }
-
-        // Check If email exist
-        const existingEmail = await User.findOne({ email });
-        if (existingEmail) {
-            return res.status(400).json({
-                success: false,
-                error: 'Sorry this email is already in use'
-            });
-        }
         
         //Create User
         const user = await User.create({
-            name, telephoneNumber, email, password
+            name, 
+            telephoneNumber, 
+            email, 
+            password
         });
 
         //Create token
@@ -130,6 +116,9 @@ const sendTokenResponse = (user, statusCode, res) => {
 
     res.status(statusCode).cookie('token',token,options).json({
         success: true,
+        _id: user._id,
+        name: user.name,
+        email: user.email,
         token
     });
 }

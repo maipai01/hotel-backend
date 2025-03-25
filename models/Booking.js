@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-const Hotel = require('./Hotel');
-
 const BookingSchema = new mongoose.Schema({
     user : {
         type : mongoose.Schema.ObjectId,
