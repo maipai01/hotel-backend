@@ -133,6 +133,26 @@ exports.getMe = async (req,res,next) => {
         data: user
     });
 };
+//@desc     Get all users
+//@route    GET /api/v1/auth/users
+//@access   Private/Admin
+exports.getUsers = async (req, res, next) => {
+    try {
+        const users = await User.find(); // Fetch all users from the database
+
+        res.status(200).json({
+            success: true,
+            count: users.length,
+            data: users
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Server Error'
+        });
+    }
+};
 
 //@desc     Logout User / Clear Cookie
 //@route    GET /api/v1/auth/logout
