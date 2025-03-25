@@ -13,8 +13,6 @@ const swaggerUI = require('swagger-ui-express');
 
 const User = require('./models/User');
 
-const PORT = process.env.PORT || 5000;
-
 //Load env vars
 dotenv.config({path:'./config/config.env'});
 
@@ -27,6 +25,8 @@ const bookings = require('./routes/bookings');
 const auth = require('./routes/auth');
 
 const app = express();
+
+const PORT = process.env.PORT || 5000;
 
 const swaggerOptions = {
     swaggerDefinition: {
